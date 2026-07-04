@@ -26,8 +26,7 @@ OUTDIR = "figures_out"; os.makedirs(OUTDIR, exist_ok=True)
 
 
 # ========================= CELL 2 ============================
-# In Colab: if the files are not already in the working directory, this opens an
-# upload widget. (You can also drag them into the Colab file browser instead.)
+
 def have_files():
     here = [f for f in os.listdir(".") if f.lower().endswith(".dta")]
     return any("_iv_" in f.lower() for f in here) and any("ocv" in f.lower() for f in here)
@@ -90,7 +89,7 @@ def read_gamry_dta(path):
     return pd.DataFrame({"t": t, "Vf": vf, "Im": im})
 
 
-# ===================== CELL 4 =========================
+# ===================== CELL 4 — open-circuit voltage =========================
 ocv_summary, ocv_curves = [], []
 for n in runs:
     df  = read_gamry_dta(ocv_map[n])
@@ -106,7 +105,7 @@ ocv_df = pd.DataFrame(ocv_summary)
 print(ocv_df.round(4).to_string(index=False))
 
 
-# ===================== CELL 5 =========================
+# ===================== CELL 5 — polarisation / power =========================
 iv_summary, iv_curves = [], []
 for n in runs:
     df = read_gamry_dta(iv_map[n])
@@ -142,7 +141,7 @@ print(f"\nMean curve  Pmax = {Pmean[kmean]*1e3:.1f} mW "
       f"(common range 0-{Imax_common*1e3:.0f} mA)")
 
 
-# ===================== CELL 6 =====================
+# ===================== CELL 6 — repeatability statistics =====================
 def round_up_unc(value, unc, sig=2):
     """Round the uncertainty UP to `sig` significant figures (math.ceil), and
     round the value to the same decimal place. Matches the thesis convention."""
@@ -172,7 +171,7 @@ rep = [
 rep_df = pd.DataFrame(rep)
 
 
-# ===================== CELL 7 ==================
+# ===================== CELL 7 — Figure 1: OCV stabilisation ==================
 fig, ax = plt.subplots(figsize=(7.0, 4.3))
 for (n, t, v) in ocv_curves:
     ax.plot(t, v, color=RUN_COLORS[n], label=f"Run {n}")
@@ -191,7 +190,7 @@ fig.savefig(f"{OUTDIR}/figA_ocv_stabilisation.png")
 plt.show()
 
 
-# ===================== CELL 8 ===============
+# ===================== CELL 8 — Figure 2: polarisation curves ===============
 fig, ax = plt.subplots(figsize=(7.0, 4.6))
 for (n, I, V, P) in iv_curves:
     ax.plot(I * 1e3, V, color=RUN_COLORS[n], alpha=0.85, label=f"Run {n}")
@@ -207,7 +206,7 @@ fig.savefig(f"{OUTDIR}/figB_polarisation_curves.png")
 plt.show()
 
 
-# ===================== CELL 9 ======================
+# ===================== CELL 9 — Figure 3: power curves ======================
 fig, ax = plt.subplots(figsize=(7.0, 4.6))
 for (n, I, V, P) in iv_curves:
     ax.plot(I * 1e3, P * 1e3, color=RUN_COLORS[n], alpha=0.85, label=f"Run {n}")
@@ -225,7 +224,7 @@ fig.savefig(f"{OUTDIR}/figC_power_curves.png")
 plt.show()
 
 
-# ============== CELL 10 ===============
+# ============== CELL 10 — Figure 4: combined mean V-I and P-I ===============
 
 fig, ax1 = plt.subplots(figsize=(7.0, 4.6))
 ax2 = ax1.twinx()
@@ -251,7 +250,7 @@ fig.savefig(f"{OUTDIR}/figD_mean_polarisation_power.png")
 plt.show()
 
 
-# ============== CELL 11 ==========
+# ============== CELL 11 — gas-production summary ==========
 
 gas_volumes = {           
     1: (15.9, 7.6), 2: (15.1, 6.9), 3: (15.1, 7.5), 4: (15.2, 7.5),
