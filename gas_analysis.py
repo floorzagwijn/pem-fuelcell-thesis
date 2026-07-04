@@ -101,7 +101,7 @@ VOL = read_volume_file(vol_file)
 print("Volume blocks found for runs:", sorted(VOL))
 
 
-# ===================== CELL 4 ==================
+# ===================== CELL 4  - per-run charge + alignment ==================
 
 trapz = np.trapezoid if hasattr(np, "trapezoid") else np.trapz   # numpy >=2.0 or older
 
@@ -149,7 +149,7 @@ gas_summary = pd.DataFrame([{
 print(gas_summary.round(3).to_string(index=False))
 
 
-# ===================== CELL 5 ====================
+# ===================== CELL 5 - repeatability statistics ====================
 def round_up_unc(value, unc, sig=2):
     if unc == 0 or not np.isfinite(unc):
         return value, unc
@@ -180,9 +180,8 @@ print(f"\nMean syringe-reading contribution: eta_H2 +/- {mean_dH2:.1f} %, "
       f"eta_O2 +/- {mean_dO2:.1f} %  (from +/-{V_READ_ERR} mL per reading)")
 
 
-# ===================== CELL 6 =====================
-# Representative run: cell voltage and drive current against time, with the
-# electrolysis-on window shaded. Time is referenced to the onset (t_video).
+# ===================== CELL 6 - Figure 9: V(t) and I(t) =====================
+# Representative run: cell voltage and drive current against time, with the electrolysis-on window shaded. Time is referenced to the onset (t_video).
 REP_RUN = 1 if 1 in runs else runs[0]
 d = G[REP_RUN]
 trel = d["t"] - d["t0"]
@@ -204,9 +203,8 @@ fig.savefig(f"{OUTDIR}/figI_electrolysis_timeseries.png")
 plt.show()
 
 
-# ============== CELL 7 =========
-# The key figure: measured H2 and O2 volume against charge passed, for all runs,
-# with the theoretical Faraday-law lines (slopes ML_PER_C_H2 and ML_PER_C_O2).
+# ============== CELL 7 - Figure 10: gas volume vs accumulated charge =========
+# Measured H2 and O2 volume against charge passed, for all runs, with the theoretical Faraday-law lines.
 fig, ax = plt.subplots(figsize=(7.0, 4.8))
 for n in runs:
     v = G[n]["vol"]
@@ -233,9 +231,8 @@ fig.savefig(f"{OUTDIR}/figJ_volume_vs_charge.png")
 plt.show()
 
 
-# ============== CELL 8 ==============
-# Endpoint Faradaic efficiency for H2 and O2 per run, with syringe-reading error
-# bars, and the run-mean drawn as a horizontal band.
+# ============== CELL 8 - Figure 11: Faradaic efficiency per run ==============
+# Endpoint Faradaic efficiency for H2 and O2 per run, with syringe-reading error bars, and the run-mean drawn as a horizontal band.
 fig, ax = plt.subplots(figsize=(7.0, 4.3))
 x = np.array(runs, float)
 eH = gas_summary["eta_H2 (%)"].values; eO = gas_summary["eta_O2 (%)"].values
