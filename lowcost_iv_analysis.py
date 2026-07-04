@@ -98,7 +98,7 @@ def read_gamry_dta(path):
     return pd.DataFrame({"t": t, "Vf": vf, "Im": im})
 
 
-# ===================== CELL 4 ====================
+# ===================== CELL 4 - low-cost per-run analysis ====================
 def analyse_lowcost(run):
     df = read_lowcost_csv(lc_map[run])
     t, V, I = df["t"].values, df["V"].values, df["I"].values
@@ -144,7 +144,7 @@ Vlc_mean, Vlc_std = Vlc.mean(0), Vlc.std(0, ddof=1)
 Plc_mean = Vlc_mean * Igrid_lc
 
 
-# ============= CELL 5 ==================
+# ============= CELL 5 - potentiostat reference ==================
 if HAVE_GAMRY:
     g_curves = []
     for n in gamry_runs:
@@ -174,7 +174,7 @@ else:
     GAMRY_MPP = (0.083, 0.68, 0.122)
 
 
-# ============= CELL 6 ==============================
+# ============= CELL 6 - cross-method comparison ==============================
 Icmp = np.linspace(0.0, min(OVERLAP_IMAX, Igrid_g.max()), 200)
 Vlc_cmp = np.interp(Icmp, Igrid_lc, Vlc_mean)
 Vg_cmp  = np.interp(Icmp, Igrid_g, Vg_mean)
@@ -195,7 +195,7 @@ print(f"\nLow-cost power at {OVERLAP_IMAX*1e3:.0f} mA (mean) = {Pov_mean*1e3:.0f
       f"Gamry mean MPP = {GAMRY_MPP[0]*1e3:.0f} mW  ->  eps_P = {epsP*100:+.0f}%")
 
 
-# ===================== CELL 7 =====================
+# ===================== CELL 7 - repeatability statistics =====================
 def round_up_unc(value, unc, sig=2):
     if unc == 0 or not np.isfinite(unc):
         return value, unc
@@ -220,7 +220,7 @@ rep = [
 rep_df = pd.DataFrame(rep)
 
 
-# ===================== CELL 8 ========================
+# ===================== CELL 8 - Figure 5: time series ========================
 REP_RUN = 6 if 6 in runs else runs[0]
 d = LC[REP_RUN]
 fig, ax1 = plt.subplots(figsize=(7.0, 4.4))
@@ -246,7 +246,7 @@ fig.savefig(f"{OUTDIR}/figE_lowcost_timeseries.pdf"); fig.savefig(f"{OUTDIR}/fig
 plt.show()
 
 
-# ===================== CELL 9 ===============
+# ===================== CELL 9 - Figure 6: polarisation overlay ===============
 fig, ax = plt.subplots(figsize=(7.0, 4.6))
 for n in runs:
     ax.plot(LC[n]["Ib"]*1e3, LC[n]["Vb"], color=RUN_COLORS[n], alpha=0.9, label=f"Run {n}")
@@ -261,7 +261,7 @@ fig.savefig(f"{OUTDIR}/figF_lowcost_polarisation.pdf"); fig.savefig(f"{OUTDIR}/f
 plt.show()
 
 
-# ===================== CELL 10 =====================
+# ===================== CELL 10 - Figure 7: power overlay =====================
 fig, ax = plt.subplots(figsize=(7.0, 4.6))
 for n in runs:
     ax.plot(LC[n]["Ib"]*1e3, LC[n]["Pb"]*1e3, color=RUN_COLORS[n], alpha=0.9, label=f"Run {n}")
@@ -277,7 +277,7 @@ fig.savefig(f"{OUTDIR}/figG_lowcost_power.pdf"); fig.savefig(f"{OUTDIR}/figG_low
 plt.show()
 
 
-# ============= CELL 11 =============
+# ============= CELL 11 - Figure 8: overlap comparison + residual  =============
 fig, (axA, axB) = plt.subplots(2, 1, figsize=(7.0, 5.2), sharex=True,
                                gridspec_kw=dict(height_ratios=[3, 1], hspace=0.08))
 axA.fill_between(Igrid_g*1e3, Vg_mean-Vg_std, Vg_mean+Vg_std, color="0.55", alpha=0.30, zorder=0)
@@ -295,7 +295,7 @@ fig.savefig(f"{OUTDIR}/figH_comparison_residual.pdf"); fig.savefig(f"{OUTDIR}/fi
 plt.show()
 
 
-# ============= CELL 12 ==========
+# ============= CELL 12 - gas-production summary ==========
 gas_volumes = {           # run : (H2 mL, O2 mL)
     1: (15.0, 7.5), 2: (15.0, 7.5), 3: (15.0, 7.5), 4: (15.0, 7.6),
     5: (15.1, 7.6), 6: (15.0, 7.5), 7: (15.0, 7.5), 8: (15.0, 7.5),
